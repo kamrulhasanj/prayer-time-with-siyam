@@ -1,0 +1,79 @@
+/* Custom Fonts with Noto Sans Bengali fallback for digits (fixes Hind Siliguri '১' bug) */
+@import url("https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap");
+
+/* Override broken digit '১' (U+09E7) and all Bengali digits in Hind Siliguri across all weights */
+@font-face {
+  font-family: 'Hind Siliguri';
+  font-style: normal;
+  font-weight: 100 900;
+  src: local('Noto Sans Bengali'),
+       local('SolaimanLipi'),
+       local('Kalpurush'),
+       url('./noto-sans-bengali.woff2') format('woff2'),
+       url('https://fonts.gstatic.com/s/notosansbengali/v33/Cn-fJsCGWQxOjaGwMQ6fIiMywrNJIky6nvd8BjzVMvJx2mc4I3mYrtU3_I-n.woff2') format('woff2');
+  unicode-range: U+09E6-09EF; /* Bengali digits ০, ১, ২, ৩, ৪, ৫, ৬, ৭, ৮, ৯ */
+}
+
+/* Also define dedicated digits font-family */
+@font-face {
+  font-family: 'BengaliDigits';
+  font-style: normal;
+  font-weight: 100 900;
+  src: local('Noto Sans Bengali'),
+       local('SolaimanLipi'),
+       local('Kalpurush'),
+       url('./noto-sans-bengali.woff2') format('woff2'),
+       url('https://fonts.gstatic.com/s/notosansbengali/v33/Cn-fJsCGWQxOjaGwMQ6fIiMywrNJIky6nvd8BjzVMvJx2mc4I3mYrtU3_I-n.woff2') format('woff2');
+  unicode-range: U+09E6-09EF;
+}
+
+html { background-color: #e5e7eb; scroll-behavior: smooth; }
+html.dark { background-color: #030712; }
+
+body {
+    font-family: "BengaliDigits", "Hind Siliguri", "Noto Sans Bengali", sans-serif;
+    padding-bottom: 80px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Ensure .font-mono elements use clean Bengali digits with tabular alignment */
+.font-mono {
+    font-family: "BengaliDigits", "Hind Siliguri", "Noto Sans Bengali", ui-monospace, monospace !important;
+    font-variant-numeric: tabular-nums;
+}
+
+.view-section {
+    display: none;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.view-section.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.accordion-content {
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+}
+
+.accordion-content.expanded {
+    max-height: 1000px;
+    opacity: 1;
+}
+
+select option { padding: 10px; }
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.overflow-y-auto::-webkit-scrollbar {
+    display: none;
+}
