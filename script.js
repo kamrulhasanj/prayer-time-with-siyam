@@ -1,5 +1,5 @@
 // ================= VERSION CONTROL & STORAGE CLEARING =================
-const APP_VERSION = 'v5'; 
+const APP_VERSION = 'v6'; 
 const STORAGE_KEY_VERSION = 'prayer_app_version';
 
 function checkAppVersion() {
@@ -711,55 +711,58 @@ function generateMonthlySchedule() {
 
 function downloadPDF() {
   const element = document.createElement("div");
-  element.style.width = "794px";
-  element.style.padding = "24px";
+  element.style.position = "fixed";
+  element.style.left = "-9999px";
+  element.style.top = "0";
+  element.style.width = "750px";
+  element.style.padding = "6px 8px";
   element.style.boxSizing = "border-box";
-  element.style.backgroundColor = "white";
-  element.style.display = "block";
+  element.style.backgroundColor = "#ffffff";
   element.style.fontFamily = "'Hind Siliguri', sans-serif";
+  element.style.color = "#111827";
 
   const monthName = banglaMonths[scheduleSelectedMonth];
   const yearStr = bnDigit(scheduleSelectedYear);
 
   element.innerHTML = `
-    <div style="text-align: center; margin-bottom: 15px;">
-      <p dir="rtl" style="font-size: 16px; margin: 0; font-weight: bold; color: #15803d;">أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ</p>
-      <h2 style="font-size: 22px; margin: 4px 0; color: #15803d; font-weight: bold;">নামাজ ও সিয়াম সময়সূচি - ${monthName} ${yearStr}</h2>
-      <p style="font-size: 13px; margin: 0; color: #374151;">জেলা: <strong>${currentDistrict}</strong> | কুরআনভিত্তিক সিয়াম: রাত থেকে রাত অবধি সিয়াম পূর্ণ করো (সূরা বাকারা: ১৮৭)</p>
+    <div style="text-align: center; margin-bottom: 6px;">
+      <p dir="rtl" style="font-size: 14px; margin: 0; font-weight: bold; color: #15803d; line-height: 1.2;">أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ</p>
+      <h2 style="font-size: 18px; margin: 2px 0; color: #15803d; font-weight: bold; line-height: 1.2;">নামাজ ও সিয়াম সময়সূচি - ${monthName} ${yearStr}</h2>
+      <p style="font-size: 11px; margin: 0; color: #374151; line-height: 1.2;">জেলা: <strong>${currentDistrict}</strong> | কুরআনভিত্তিক সিয়াম: রাত থেকে রাত অবধি সিয়াম পূর্ণ করো (সূরা বাকারা: ১৮৭)</p>
     </div>
     
-    <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 11px;">
+    <table style="width: 100%; border-collapse: collapse; table-layout: fixed; text-align: center; font-size: 10px;">
       <thead>
         <tr style="background-color: #15803d; color: white;">
-          <th style="border: 1px solid #14532d; padding: 5px;">তারিখ ও বার</th>
-          <th style="border: 1px solid #14532d; padding: 5px;">সেহরি শেষ</th>
-          <th style="border: 1px solid #14532d; padding: 5px;">ফজর</th>
-          <th style="border: 1px solid #14532d; padding: 5px;">সূর্যোদয়</th>
-          <th style="border: 1px solid #14532d; padding: 5px;">যোহর</th>
-          <th style="border: 1px solid #14532d; padding: 5px;">আসর</th>
-          <th style="border: 1px solid #14532d; padding: 5px;">মাগরিব</th>
-          <th style="border: 1px solid #14532d; padding: 5px;">এশা</th>
-          <th style="border: 1px solid #14532d; padding: 5px; background-color: #14532d;">ইফতার (রাত)</th>
+          <th style="border: 1px solid #14532d; padding: 4px 2px; width: 14%;">তারিখ ও বার</th>
+          <th style="border: 1px solid #14532d; padding: 4px 2px; width: 10.5%;">সেহরি শেষ</th>
+          <th style="border: 1px solid #14532d; padding: 4px 2px; width: 10.5%;">ফজর</th>
+          <th style="border: 1px solid #14532d; padding: 4px 2px; width: 10.5%;">সূর্যোদয়</th>
+          <th style="border: 1px solid #14532d; padding: 4px 2px; width: 10.5%;">যোহর</th>
+          <th style="border: 1px solid #14532d; padding: 4px 2px; width: 10.5%;">আসর</th>
+          <th style="border: 1px solid #14532d; padding: 4px 2px; width: 10.5%;">মাগরিব</th>
+          <th style="border: 1px solid #14532d; padding: 4px 2px; width: 10.5%;">এশা</th>
+          <th style="border: 1px solid #14532d; padding: 4px 2px; width: 12.5%; background-color: #14532d;">ইফতার (রাত)</th>
         </tr>
       </thead>
       <tbody>
         ${currentMonthlyScheduleData.map((d, idx) => `
-          <tr style="background-color: ${idx % 2 === 0 ? '#ffffff' : '#f9fafb'}; line-height: 1.2;">
-            <td style="border: 1px solid #d1d5db; padding: 4px; font-weight: 500; color: #111827;">${d.dateStr}</td>
-            <td style="border: 1px solid #d1d5db; padding: 4px; color: #111827;">${d.sehri}</td>
-            <td style="border: 1px solid #d1d5db; padding: 4px; color: #111827;">${d.fajr}</td>
-            <td style="border: 1px solid #d1d5db; padding: 4px; color: #111827;">${d.sunrise}</td>
-            <td style="border: 1px solid #d1d5db; padding: 4px; color: #111827;">${d.dhuhr}</td>
-            <td style="border: 1px solid #d1d5db; padding: 4px; color: #111827;">${d.asr}</td>
-            <td style="border: 1px solid #d1d5db; padding: 4px; color: #111827;">${d.maghrib}</td>
-            <td style="border: 1px solid #d1d5db; padding: 4px; color: #111827;">${d.isha}</td>
-            <td style="border: 1px solid #d1d5db; padding: 4px; font-weight: bold; color: #15803d; background-color: #f0fdf4;">${d.iftar}</td>
+          <tr style="background-color: ${idx % 2 === 0 ? '#ffffff' : '#f8fafc'}; line-height: 1;">
+            <td style="border: 1px solid #cbd5e1; padding: 2.5px 2px; font-weight: 500; color: #111827; white-space: nowrap;">${d.dateStr}</td>
+            <td style="border: 1px solid #cbd5e1; padding: 2.5px 2px; color: #111827; white-space: nowrap;">${d.sehri}</td>
+            <td style="border: 1px solid #cbd5e1; padding: 2.5px 2px; color: #111827; white-space: nowrap;">${d.fajr}</td>
+            <td style="border: 1px solid #cbd5e1; padding: 2.5px 2px; color: #111827; white-space: nowrap;">${d.sunrise}</td>
+            <td style="border: 1px solid #cbd5e1; padding: 2.5px 2px; color: #111827; white-space: nowrap;">${d.dhuhr}</td>
+            <td style="border: 1px solid #cbd5e1; padding: 2.5px 2px; color: #111827; white-space: nowrap;">${d.asr}</td>
+            <td style="border: 1px solid #cbd5e1; padding: 2.5px 2px; color: #111827; white-space: nowrap;">${d.maghrib}</td>
+            <td style="border: 1px solid #cbd5e1; padding: 2.5px 2px; color: #111827; white-space: nowrap;">${d.isha}</td>
+            <td style="border: 1px solid #cbd5e1; padding: 2.5px 2px; font-weight: bold; color: #15803d; background-color: #f0fdf4; white-space: nowrap;">${d.iftar}</td>
           </tr>
         `).join("")}
       </tbody>
     </table>
     
-    <div style="margin-top: 15px; text-align: center; font-size: 10px; color: #6b7280;">
+    <div style="margin-top: 6px; text-align: center; font-size: 9px; color: #6b7280; line-height: 1.2;">
       Prayer Time With Siyam • Design & Developed with ❤️ by Kamrul Hasan
     </div>
   `;
@@ -767,15 +770,24 @@ function downloadPDF() {
   document.body.appendChild(element);
 
   const opt = {
-    margin: 8,
+    margin: [7, 7, 7, 7],
     filename: `Prayer-Schedule-${scheduleSelectedMonth + 1}-${scheduleSelectedYear}-${currentDistrict}.pdf`,
     image: { type: "jpeg", quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, logging: false },
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      width: 750,
+      windowWidth: 750
+    },
     jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
   };
 
   html2pdf().set(opt).from(element).save().then(() => {
-    document.body.removeChild(element);
+    if (element.parentNode) element.parentNode.removeChild(element);
+  }).catch((err) => {
+    console.error("PDF generation error:", err);
+    if (element.parentNode) element.parentNode.removeChild(element);
   });
 }
 
