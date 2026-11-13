@@ -1,5 +1,5 @@
 // ================= VERSION CONTROL & STORAGE CLEARING =================
-const APP_VERSION = 'v4'; 
+const APP_VERSION = 'v5'; 
 const STORAGE_KEY_VERSION = 'prayer_app_version';
 
 function checkAppVersion() {

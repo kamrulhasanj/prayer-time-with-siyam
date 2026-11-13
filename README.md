@@ -32,19 +32,21 @@ Built with Vanilla JavaScript, Adhan.js, and Tailwind CSS, this app operates ent
 * **Health Guidelines:** Curated health tips for hydration and balanced eating during fasting.
 
 ### ⚙️ Technical & Offline Capabilities
-* **Offline-First PWA:** Service Worker cache enables full offline functionality anytime, anywhere.
+* **100% Local Assets (Zero External CDN):** All scripts (Tailwind CSS, Adhan.js, html2pdf.js), vector icons (FontAwesome), fonts (Hind Siliguri, Noto Sans Bengali), and article images are bundled locally within the project folder.
+* **Offline-First PWA:** Service Worker cache enables full offline functionality anytime, anywhere without an active internet connection.
 * **Zero Backend / Serverless:** 100% client-side computation with bundled `adhan.umd.min.js`.
 * **Dark / Light Mode:** Automatic system preference detection with manual toggle button.
 
 ## 🛠️ Technologies Used
 
 * **HTML5 / CSS3**
-* **Tailwind CSS** (for clean, responsive styling)
+* **Tailwind CSS** (Local standalone script for modern responsive styling)
 * **Vanilla JavaScript** (No heavy frameworks, maximum speed)
-* **Adhan.js** (Astronomical high-precision prayer calculation engine)
+* **Adhan.js** (Local high-precision prayer calculation engine)
 * **Service Workers & Cache API** (For 100% offline PWA capabilities)
-* **FontAwesome** (Vector icons)
-* **html2pdf.js** (Client-side PDF rendering)
+* **FontAwesome 6** (Local vector icons & webfonts)
+* **html2pdf.js** (Local client-side PDF rendering)
+* **Local WebFonts** (Hind Siliguri & Noto Sans Bengali WOFF2)
 
 ## 🚀 Local Development
 

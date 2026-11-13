@@ -1,5 +1,5 @@
 // >>>>> IMPORTANT: গিটহাবে পুশ করার আগে এই ভার্সনটি পরিবর্তন করবেন <<<<<
-const CURRENT_VERSION = 'v4'; 
+const CURRENT_VERSION = 'v5'; 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 const CACHE_NAME = `prayer-app-${CURRENT_VERSION}`;
@@ -10,17 +10,37 @@ const urlsToCache = [
   './script.js',
   './style.css',
   './adhan.umd.min.js',
-  './noto-sans-bengali.woff2',
   './icon-192x192.png',
   './icon-512x512.png',
-  'https://cdn.tailwindcss.com',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
-  'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js',
-  'https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap'
+  './lib/tailwind.min.js',
+  './lib/html2pdf.bundle.min.js',
+  './lib/font-awesome/css/all.min.css',
+  './lib/font-awesome/webfonts/fa-solid-900.woff2',
+  './lib/font-awesome/webfonts/fa-solid-900.ttf',
+  './lib/font-awesome/webfonts/fa-regular-400.woff2',
+  './lib/font-awesome/webfonts/fa-regular-400.ttf',
+  './lib/font-awesome/webfonts/fa-brands-400.woff2',
+  './lib/font-awesome/webfonts/fa-brands-400.ttf',
+  './fonts/noto-sans-bengali.woff2',
+  './fonts/hind-siliguri/hind-siliguri-300.woff2',
+  './fonts/hind-siliguri/hind-siliguri-400.woff2',
+  './fonts/hind-siliguri/hind-siliguri-500.woff2',
+  './fonts/hind-siliguri/hind-siliguri-600.woff2',
+  './fonts/hind-siliguri/hind-siliguri-700.woff2',
+  './fonts/hind-siliguri/hind-siliguri-latin-300.woff2',
+  './fonts/hind-siliguri/hind-siliguri-latin-400.woff2',
+  './fonts/hind-siliguri/hind-siliguri-latin-500.woff2',
+  './fonts/hind-siliguri/hind-siliguri-latin-600.woff2',
+  './fonts/hind-siliguri/hind-siliguri-latin-700.woff2',
+  './images/night-day-bn-ramadan.jpg',
+  './images/ramadan-rahmat-vs-lanat-meaning.png',
+  './images/mahe-ramadan-siyam-sadhona.png',
+  './images/twilight.webp',
+  './images/fasting-till-night-3.jpg',
+  './images/fasting-till-night-4.jpg'
 ];
 
 self.addEventListener('install', event => {
-  // নতুন ভার্সন আসলে সাথে সাথেই ইন্সটল হয়ে যাবে, ওয়েট করবে না
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -29,7 +49,6 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-  // পুরনো সব ক্যাশ ডিলিট করে শুধু নতুন ভার্সনের ক্যাশ রাখবে
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
@@ -40,7 +59,7 @@ self.addEventListener('activate', event => {
           }
         })
       );
-    }).then(() => self.clients.claim()) // নতুন সার্ভিস ওয়ার্কার সাথে সাথে কন্ট্রোল নিয়ে নেবে
+    }).then(() => self.clients.claim())
   );
 });
 
