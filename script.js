@@ -1,5 +1,5 @@
 // ================= VERSION CONTROL & STORAGE CLEARING =================
-const APP_VERSION = 'v6'; 
+const APP_VERSION = 'v7'; 
 const STORAGE_KEY_VERSION = 'prayer_app_version';
 
 function checkAppVersion() {
@@ -188,14 +188,37 @@ function formatTimeBengali(date) {
 const banglaDays = ["রবিবার", "সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার", "শনিবার"];
 const banglaMonths = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
 
+const hijriMonthsBn = [
+  "মহররম",
+  "সফর",
+  "রবিউল আউয়াল",
+  "রবিউস সানি",
+  "জমাদিউল আউয়াল",
+  "জমাদিউস সানি",
+  "রজব",
+  "শাবান",
+  "রমজান",
+  "শাওয়াল",
+  "জিলকদ",
+  "জিলহজ"
+];
+
 function getHijriDate(date) {
   try {
-    const fmt = new Intl.DateTimeFormat('bn-BD-u-ca-islamic-umalqura', {
+    const fmt = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
       day: 'numeric',
-      month: 'long',
+      month: 'numeric',
       year: 'numeric'
     });
-    return fmt.format(date).replace(/যুগ/g, 'হিজরী');
+    const parts = fmt.formatToParts(date);
+    const day = parts.find(p => p.type === 'day')?.value;
+    const monthNum = parseInt(parts.find(p => p.type === 'month')?.value, 10);
+    const year = parts.find(p => p.type === 'year')?.value;
+
+    if (!day || isNaN(monthNum) || !year || !hijriMonthsBn[monthNum - 1]) {
+      return "";
+    }
+    return `${bnDigit(day)} ${hijriMonthsBn[monthNum - 1]}, ${bnDigit(year)} হিজরী`;
   } catch (e) {
     return "";
   }

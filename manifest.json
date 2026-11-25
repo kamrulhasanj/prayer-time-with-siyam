@@ -2,20 +2,25 @@
   "name": "Prayer Time With Siyam",
   "short_name": "Prayer & Siyam",
   "description": "Prayer Time With Siyam - Daily Salah & Siyam Schedule, Tracker and Tools",
+  "id": "./",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#f0fdf4",
   "theme_color": "#15803d",
   "icons": [
     {
       "src": "icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }

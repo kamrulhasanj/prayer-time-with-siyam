@@ -1,5 +1,5 @@
 // >>>>> IMPORTANT: গিটহাবে পুশ করার আগে এই ভার্সনটি পরিবর্তন করবেন <<<<<
-const CURRENT_VERSION = 'v6'; 
+const CURRENT_VERSION = 'v7'; 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 const CACHE_NAME = `prayer-app-${CURRENT_VERSION}`;
