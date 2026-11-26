@@ -1,5 +1,5 @@
 // ================= VERSION CONTROL & STORAGE CLEARING =================
-const APP_VERSION = 'v7'; 
+const APP_VERSION = 'v12'; 
 const STORAGE_KEY_VERSION = 'prayer_app_version';
 
 function checkAppVersion() {
@@ -114,9 +114,15 @@ if (themeToggleBtn) {
     if (htmlElement.classList.contains("dark")) {
       htmlElement.classList.remove("dark");
       localStorage.setItem("color-theme", "light");
+      if (window.AndroidBridge && window.AndroidBridge.onThemeChanged) {
+        window.AndroidBridge.onThemeChanged("light");
+      }
     } else {
       htmlElement.classList.add("dark");
       localStorage.setItem("color-theme", "dark");
+      if (window.AndroidBridge && window.AndroidBridge.onThemeChanged) {
+        window.AndroidBridge.onThemeChanged("dark");
+      }
     }
   });
 }
@@ -184,9 +190,47 @@ function formatTimeBengali(date) {
   return bnDigit(formatTime12(date));
 }
 
+function formatTimeBengaliHtml(date) {
+  return formatTimeBengali(date).replace(/\s(AM|PM)$/, ' <span class="text-[0.65em] font-semibold opacity-85">$1</span>');
+}
+
 // Bengali Day Names
 const banglaDays = ["রবিবার", "সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার", "শনিবার"];
 const banglaMonths = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
+const bangabdaMonths = ["বৈশাখ", "জ্যৈষ্ঠ", "আষাঢ়", "শ্রাবণ", "ভাদ্র", "আশ্বিন", "কার্তিক", "অগ্রহায়ণ", "পৌষ", "মাঘ", "ফাল্গুন", "চৈত্র"];
+const banglaSeasons = [
+  "গ্রীষ্মকাল", "গ্রীষ্মকাল",
+  "বর্ষাকাল", "বর্ষাকাল",
+  "শরৎকাল", "শরৎকাল",
+  "হেমন্তকাল", "হেমন্তকাল",
+  "শীতকাল", "শীতকাল",
+  "বসন্তকাল", "বসন্তকাল"
+];
+
+function getBangabdaDateBn(date) {
+  const gYear = date.getFullYear();
+  const gMonth = date.getMonth();
+  const gDay = date.getDate();
+
+  const bStartYear = (gMonth > 3 || (gMonth === 3 && gDay >= 14)) ? gYear : gYear - 1;
+  const bYear = bStartYear - 593;
+
+  const startMs = new Date(bStartYear, 3, 14).getTime();
+  const curMs = new Date(gYear, gMonth, gDay).getTime();
+  let dayOfBanglaYear = Math.round((curMs - startMs) / (24 * 60 * 60 * 1000));
+
+  const nextGregYear = bStartYear + 1;
+  const isLeap = (nextGregYear % 4 === 0 && (nextGregYear % 100 !== 0 || nextGregYear % 400 === 0));
+  const monthLengths = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, isLeap ? 30 : 29, 30];
+
+  let mIndex = 0;
+  while (mIndex < 11 && dayOfBanglaYear >= monthLengths[mIndex]) {
+    dayOfBanglaYear -= monthLengths[mIndex];
+    mIndex++;
+  }
+  const bDay = dayOfBanglaYear + 1;
+  return `${bnDigit(bDay)} ${bangabdaMonths[mIndex]}, ${bnDigit(bYear)}, ${banglaSeasons[mIndex]}`;
+}
 
 const hijriMonthsBn = [
   "মহররম",
@@ -261,6 +305,9 @@ if (districtSelect) {
   districtSelect.addEventListener("change", function (e) {
     currentDistrict = e.target.value;
     localStorage.setItem("selected-district", currentDistrict);
+    if (window.AndroidBridge && window.AndroidBridge.onDistrictChanged) {
+      window.AndroidBridge.onDistrictChanged(currentDistrict);
+    }
     updateHomeTimer();
     renderPrayerTab();
     generateMonthlySchedule();
@@ -284,6 +331,10 @@ function calculatePrayerTimes(date, districtName) {
   const adhanCoords = new adhan.Coordinates(coords.lat, coords.lng);
   const params = getAdhanCalculationParams();
   const pt = new adhan.PrayerTimes(adhanCoords, date, params);
+
+  const paramsShafi = adhan.CalculationMethod.Karachi();
+  paramsShafi.madhab = adhan.Madhab.Shafi;
+  const ptShafi = new adhan.PrayerTimes(adhanCoords, date, paramsShafi);
 
   // সেহরি শেষ (সুবহে সাদেকের পূর্বে)
   const sehriEnd = new Date(pt.fajr.getTime() - 2 * 60 * 1000);
@@ -314,6 +365,7 @@ function calculatePrayerTimes(date, districtName) {
     zawal: zawalStart,
     dhuhr: pt.dhuhr,
     asr: pt.asr,
+    asrShafi: ptShafi.asr,
     sunsetProhibited: sunsetProhibitedStart,
     maghrib: pt.maghrib,
     iftar: iftarStart,
@@ -363,8 +415,8 @@ function updateHomeTimer() {
   // Update Sehri & Iftar display cards
   const sehriEl = document.getElementById("sehri-time");
   const iftarEl = document.getElementById("iftar-time");
-  if (sehriEl) sehriEl.innerText = formatTimeBengali(displaySehri);
-  if (iftarEl) iftarEl.innerText = formatTimeBengali(displayIftar);
+  if (sehriEl) sehriEl.innerHTML = formatTimeBengaliHtml(displaySehri);
+  if (iftarEl) iftarEl.innerHTML = formatTimeBengaliHtml(displayIftar);
 
   // Update Label
   const labelEl = document.getElementById("countdown-label");
@@ -382,25 +434,122 @@ function updateHomeTimer() {
   const cdEl = document.getElementById("countdown");
   if (cdEl) cdEl.innerText = bnDigit(timerStr);
 
-  // Dynamic Date Badge
-  const currentEngDateStr = now.toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric"
-  });
-
-  // In Islamic calendar, a new day starts after Maghrib
+  // Dynamic Date Badge (Line 1: Hijri, Line 2: Bangabda + Season, Line 3: "বৃহস্পতিবার, ২৬ নভেম্বর, ২০২৬")
   const hijriBaseDate = isAfterIftar ? tomorrow : now;
   const hijriDateStr = getHijriDate(hijriBaseDate);
+  const banglaCalDateStr = getBangabdaDateBn(now);
+  const banglaDateStr = `${banglaDays[now.getDay()]}, ${bnDigit(now.getDate())} ${banglaMonths[now.getMonth()]}, ${bnDigit(now.getFullYear())}`;
 
-  const dateBadgeEl = document.getElementById("current-date-display");
-  if (dateBadgeEl) {
-    if (hijriDateStr) {
-      dateBadgeEl.innerText = `আজ ${hijriDateStr} (${bnDigit(currentEngDateStr)})`;
-    } else {
-      dateBadgeEl.innerText = `আজ ${bnDigit(currentEngDateStr)}`;
-    }
+  const hijriLineEl = document.getElementById("home-hijri-date");
+  const banglaCalLineEl = document.getElementById("home-bangla-cal-date");
+  const banglaLineEl = document.getElementById("home-bangla-date");
+  if (hijriLineEl) hijriLineEl.innerText = hijriDateStr || "--";
+  if (banglaCalLineEl) banglaCalLineEl.innerText = banglaCalDateStr;
+  if (banglaLineEl) banglaLineEl.innerText = banglaDateStr;
+
+  // Current & Next Waqt Cards
+  const waqt = getHomeWaqtSummary(now, todayTimes, tomorrowTimes);
+  const curNameEl = document.getElementById("home-current-waqt-name");
+  const curTimeEl = document.getElementById("home-current-waqt-time");
+  const nextNameEl = document.getElementById("home-next-waqt-name");
+  const nextTimeEl = document.getElementById("home-next-waqt-time");
+  if (curNameEl) curNameEl.innerText = waqt.currentName;
+  if (curTimeEl) curTimeEl.innerHTML = waqt.currentTime.replace(/\n/g, "<br>");
+  if (nextNameEl) nextNameEl.innerText = waqt.nextName;
+  if (nextTimeEl) nextTimeEl.innerHTML = waqt.nextTime.replace(/\n/g, "<br>");
+}
+
+function formatRangeBengali(start, end) {
+  return `${formatTimeNoAmPm(start)} - ${formatTimeNoAmPm(end)}`;
+}
+
+function formatTimeNoAmPm(date) {
+  if (!date || isNaN(date.getTime())) return "--:--";
+  let hours = date.getHours();
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+  const minutes = date.getMinutes();
+  return bnDigit(`${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`);
+}
+
+function formatAsrDualLine(asrShafi, asrHanafi, maghrib) {
+  const endStr = formatTimeNoAmPm(maghrib);
+  return `শাফেয়ীঃ ${formatTimeNoAmPm(asrShafi)} - ${endStr}\nহানাফীঃ ${formatTimeNoAmPm(asrHanafi)} - ${endStr}`;
+}
+
+function getHomeWaqtSummary(now, today, tomorrow) {
+  const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+
+  if (now < today.fajr) {
+    return {
+      currentName: "তাহাজ্জুদ",
+      currentTime: formatRangeBengali(midnight, today.sehri),
+      nextName: "ফজর",
+      nextTime: formatRangeBengali(today.fajr, today.sunrise)
+    };
   }
+  if (now < today.sunrise) {
+    return {
+      currentName: "ফজর",
+      currentTime: formatRangeBengali(today.fajr, today.sunrise),
+      nextName: "ইশরাক",
+      nextTime: formatRangeBengali(today.ishraq, today.zawal)
+    };
+  }
+  if (now < today.ishraq) {
+    return {
+      currentName: "সূর্যোদয় (নিষিদ্ধ)",
+      currentTime: formatRangeBengali(today.sunrise, today.ishraq),
+      nextName: "ইশরাক",
+      nextTime: formatRangeBengali(today.ishraq, today.zawal)
+    };
+  }
+  if (now < today.zawal) {
+    return {
+      currentName: "ইশরাক ও চাশত",
+      currentTime: formatRangeBengali(today.ishraq, today.zawal),
+      nextName: "যোহর",
+      nextTime: formatRangeBengali(today.dhuhr, today.asr)
+    };
+  }
+  if (now < today.dhuhr) {
+    return {
+      currentName: "দ্বিপ্রহর (নিষিদ্ধ)",
+      currentTime: formatRangeBengali(today.zawal, today.dhuhr),
+      nextName: "যোহর",
+      nextTime: formatRangeBengali(today.dhuhr, today.asr)
+    };
+  }
+  if (now < today.asr) {
+    return {
+      currentName: "যোহর",
+      currentTime: formatRangeBengali(today.dhuhr, today.asr),
+      nextName: "আসর",
+      nextTime: formatAsrDualLine(today.asrShafi, today.asr, today.maghrib)
+    };
+  }
+  if (now < today.maghrib) {
+    return {
+      currentName: "আসর",
+      currentTime: formatAsrDualLine(today.asrShafi, today.asr, today.maghrib),
+      nextName: "মাগরিব",
+      nextTime: formatRangeBengali(today.maghrib, today.isha)
+    };
+  }
+  if (now < today.isha) {
+    return {
+      currentName: "মাগরিব",
+      currentTime: formatRangeBengali(today.maghrib, today.isha),
+      nextName: "এশা",
+      nextTime: formatRangeBengali(today.isha, tomorrow.fajr)
+    };
+  }
+  return {
+    currentName: "এশা",
+    currentTime: formatRangeBengali(today.isha, tomorrow.fajr),
+    nextName: "ফজর",
+    nextTime: formatRangeBengali(tomorrow.fajr, tomorrow.sunrise)
+  };
 }
 
 // ================= 2. NEW PRAYER TAB LOGIC =================
