@@ -37,6 +37,16 @@ Built with Vanilla JavaScript, Adhan.js, and Tailwind CSS, this app operates ent
 * **Zero Backend / Serverless:** 100% client-side computation with bundled `adhan.umd.min.js`.
 * **Dark / Light Mode:** Automatic system preference detection with manual toggle button.
 
+## 📱 Android App & Home Screen Widgets
+
+Download the official **Offline-First Android App** with **Light Mode** & **Dark Mode** Home Screen Widgets (supports customizable font sizes `85%–150%`, Hijri + Bangabda + Season + Gregorian dates, Sehri/Iftar countdown, and Current/Next Waqt with Shafi'i & Hanafi Asr times):
+
+👉 **[Download Android App (`app-release.apk`)](https://github.com/kamrulhasanj/prayer-time-with-siyam/raw/main/release/app-release.apk)**
+
+| Light Mode Widget | Dark Mode Widget |
+| :---: | :---: |
+| ![Light Mode Widget](images/widget-light.png) | ![Dark Mode Widget](images/widget-dark.png) |
+
 ## 🛠️ Technologies Used
 
 * **HTML5 / CSS3**
